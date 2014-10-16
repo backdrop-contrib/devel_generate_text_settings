@@ -140,7 +140,7 @@ function devel_generate_text_settings_form_devel_generate_content_form_alter(&$f
   $form['title_prefix'] = array(
     '#type' => 'textfield',
     '#title' => t('Prefix for title values'),
-    '#description' => t('If set, this value will be prepended to the auto-generated title node title.'),
+    '#description' => t('If set, this value will be prepended to the auto-generated node title.'),
     '#default_value' => variable_get('devel_generate_text_settings_node_title_prefix', ''),
     '#weight' => 98,
   );
