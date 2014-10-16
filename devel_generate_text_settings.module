@@ -157,7 +157,7 @@ function devel_generate_text_settings_form_devel_generate_content_form_alter(&$f
         '<strong>Examples:</strong><ul>' .
         '<li>Between 100 and 250 characters, with sentences:<ul><li><code>field_blog_preview, char, 100, 250</code></li></ul></li>' .
         '<li>Between 3 and 7 words, no sentences, all words start with capital letter:<ul><li><code>field_program_name, word, 3, 7, true</code></li></ul></li>' .
-        '<li>One paragraph, with sentences:<ul><li><code>field_program_desc, para, 1, 1</code></li></ul></li>' .
+        '<li>One paragraph, with sentences:<ul><li><code>body, para, 1, 1</code></li></ul></li>' .
         '</ul>'),
     '#default_value' => variable_get('devel_generate_text_settings_node_text_settings', ''),
     '#weight' => 99,
