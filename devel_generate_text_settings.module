@@ -55,7 +55,7 @@ function devel_generate_text_settings_apply_node_text_settings_to_field(&$node, 
       break;
   }
 
-  $treat_as_title = (isset($def[4]) && strtolower($def[4]) == true) ? TRUE : FALSE;
+  $treat_as_title = (isset($def[4]) && strtolower($def[4]) == 'true') ? TRUE : FALSE;
 
   $field_result = array();
 
@@ -80,7 +80,7 @@ function devel_generate_text_settings_apply_node_text_settings_to_field(&$node, 
         // This means if every word was only 2 characters we'd still have enough. It might be overkill, but this will always work.
         $field_result[$i]['value'] = substr(devel_create_greeking(floor($def[3] / 2), $treat_as_title), 0, mt_rand($def[2], $def[3]));
       }
-      else if ($def[1] == 'word') {
+      elseif ($def[1] == 'word') {
         // Limit number of words
         // Generate greeking for a random number of words between min and max; unfortunately this always returns more than the count we pass
         $devel_greeking = devel_create_greeking(mt_rand($def[2], $def[3]), $treat_as_title);
@@ -92,7 +92,7 @@ function devel_generate_text_settings_apply_node_text_settings_to_field(&$node, 
         // Limit number of paragraphs
         $rand_max = mt_rand($def[2], $def[3]);
         for ($c = 1; $c <= $rand_max; $c++) {
-          $field_result[$i]['value'] .= devel_create_para(mt_rand(10,60)) ."\n\n";
+          $field_result[$i]['value'] .= devel_create_para(mt_rand(10, 60)) . "\n\n";
         }
       }
 
@@ -173,7 +173,7 @@ function devel_generate_text_settings_form_devel_generate_content_form_alter(&$f
 /**
  * Additional validate callback for the devel_generate_content_form
  */
-function devel_generate_text_settings_node_text_settings_validate_callback($form, &$form_state){
+function devel_generate_text_settings_node_text_settings_validate_callback($form, &$form_state) {
   $defined_text_settings = explode("\n", $form_state['values']['text_field_settings']);
 
   // Get all text fields in the database
@@ -224,7 +224,7 @@ function devel_generate_text_settings_node_text_settings_validate_callback($form
 /**
  * Additional submit callback for the devel_generate_content_form
  */
-function devel_generate_text_settings_node_text_settings_submit_callback($form, &$form_state){
+function devel_generate_text_settings_node_text_settings_submit_callback($form, &$form_state) {
   variable_set('devel_generate_text_settings_node_title_prefix', $form_state['values']['title_prefix']);
   variable_set('devel_generate_text_settings_node_text_settings', $form_state['values']['text_field_settings']);
 }
