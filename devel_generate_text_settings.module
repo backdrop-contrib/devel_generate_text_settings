@@ -6,18 +6,29 @@
  */
 
 /**
+ * Implements hook_config_info().
+ */
+function devel_generate_text_settings_config_info() {
+  $prefixes['devel_generate_text_settings.settings'] = array(
+    'label' => t('Module name settings'),
+    'group' => t('Configuration'),
+  );
+}
+
+/**
  * Implements hook_node_presave().
  */
 function devel_generate_text_settings_node_presave($node) {
+  $config = config('devel_generate_text_settings.settings');
   if (isset($node->devel_generate)) {
     // If there's a title_prefix, use it
-    $title_prefix = variable_get('devel_generate_text_settings_node_title_prefix', '');
+    $title_prefix = $config->get('devel_generate_text_settings_node_title_prefix');
     if (!empty($title_prefix)) {
       $node->title = trim($title_prefix) . ' ' . $node->title;
     }
 
     // If there are text_field_settings overrides, apply them
-    $defined_text_settings = variable_get('devel_generate_text_settings_node_text_settings', '');
+    $defined_text_settings = $config->get('devel_generate_text_settings_node_text_settings');
     if ($defined_text_settings) {
       $defined_text_settings = explode("\n", $defined_text_settings);
       $instances = field_info_instances('node', $node->type);
@@ -134,6 +145,7 @@ function devel_generate_text_settings_apply_node_text_settings_to_field(&$node, 
  * Implements hook_form_FORM_ID_alter().
  */
 function devel_generate_text_settings_form_devel_generate_content_form_alter(&$form, &$form_state, $form_id) {
+  $config = config('devel_generate_text_settings.settings');
   $form['title_length']['#title'] = t('Maximum number of words in title (excluding <em>title prefix</em> if set below)');
 
   // Add a new title_prefix field to allow automatic title prefixing (useful for identifying auto-generated content)
@@ -141,7 +153,7 @@ function devel_generate_text_settings_form_devel_generate_content_form_alter(&$f
     '#type' => 'textfield',
     '#title' => t('Prefix for title values'),
     '#description' => t('If set, this value will be prepended to the auto-generated node title.'),
-    '#default_value' => variable_get('devel_generate_text_settings_node_title_prefix', ''),
+    '#default_value' => $config->get('devel_generate_text_settings_node_title_prefix'),
     '#weight' => 98,
   );
 
@@ -159,7 +171,7 @@ function devel_generate_text_settings_form_devel_generate_content_form_alter(&$f
         '<li>Between 3 and 7 words, no sentences, all words start with capital letter:<ul><li><code>field_program_name, word, 3, 7, true</code></li></ul></li>' .
         '<li>One paragraph, with sentences:<ul><li><code>body, para, 1, 1</code></li></ul></li>' .
         '</ul>'),
-    '#default_value' => variable_get('devel_generate_text_settings_node_text_settings', ''),
+    '#default_value' => $config->get('devel_generate_text_settings_node_text_settings'),
     '#weight' => 99,
   );
 
@@ -177,8 +189,18 @@ function devel_generate_text_settings_node_text_settings_validate_callback($form
   $defined_text_settings = explode("\n", $form_state['values']['text_field_settings']);
 
   // Get all text fields in the database
-  $query = db_query('SELECT field_name, type FROM {field_config}');
-  $all_fields = $query->fetchAllKeyed(0, 1);
+  // $query = db_query('SELECT field_name, type FROM {field_config}');
+  // $all_fields = $query->fetchAllKeyed(0, 1);
+
+  $prefix = 'field.field.';
+  $config_names = config_get_names_with_prefix($prefix);
+
+  $all_fields = array();
+  foreach ($config_names as $config_name) {
+    $config = config($config_name);
+    $field = $config->get();
+    $all_fields[$field['field_name']] = $field['type'];
+  }
 
   // Loop through each definition and validate it
   foreach ($defined_text_settings as $def) {
@@ -225,6 +247,6 @@ function devel_generate_text_settings_node_text_settings_validate_callback($form
  * Additional submit callback for the devel_generate_content_form
  */
 function devel_generate_text_settings_node_text_settings_submit_callback($form, &$form_state) {
-  variable_set('devel_generate_text_settings_node_title_prefix', $form_state['values']['title_prefix']);
-  variable_set('devel_generate_text_settings_node_text_settings', $form_state['values']['text_field_settings']);
+  config_set('devel_generate_text_settings.settings', 'devel_generate_text_settings_node_title_prefix', $form_state['values']['title_prefix']);
+  config_set('devel_generate_text_settings.settings', 'devel_generate_text_settings_node_text_settings', $form_state['values']['text_field_settings']);
 }

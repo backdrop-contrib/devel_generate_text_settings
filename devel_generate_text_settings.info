@@ -1,5 +1,6 @@
 name = Devel generate text settings
 description = Lets users adjust how Devel Generate populates node text fields. Allows field-specific override of paragraph count, min/max characters and words, and more.
 package = Development
-core = 7.x
+backdrop = 1.x
+type = module
 dependencies[] = devel_generate
