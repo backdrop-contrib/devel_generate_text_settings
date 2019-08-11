@@ -21,6 +21,7 @@ Two new fields will be added to the bottom of the
 "Devel Generate > Generate content" form:
 
 **Prefix for title values**
+
 If set, this value will be prepended to the auto-generated node title.
 
 **Text field settings**
@@ -32,13 +33,17 @@ Controls the length and format of generated content for text and long text field
 - Format: field_machine_name, count_type, min, max, treat_as_title
 
 **Examples:** (for Text field settings)
+
 *Between 100 and 250 characters, with sentences:*
+
 field_blog_preview, char, 100, 250
 
 *Between 3 and 7 words, no sentences, all words start with capital letter:*
+
 field_program_name, word, 3, 7, true
 
 *One paragraph, with sentences:*
+
 body, para, 1, 1
 
 
