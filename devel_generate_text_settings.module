@@ -75,8 +75,8 @@ function devel_generate_text_settings_apply_node_text_settings_to_field(&$node, 
     $field_result[$i]['value'] = '';
 
     // Determine and save the format for the text field
+    $formats = filter_formats();
     if (!empty($instance['settings']['text_processing'])) {
-      $formats = filter_formats();
       $field_result[$i]['format'] = array_rand($formats);
     }
     else {
@@ -101,10 +101,27 @@ function devel_generate_text_settings_apply_node_text_settings_to_field(&$node, 
       }
       else {
         // Limit number of paragraphs
-        $rand_max = mt_rand($def[2], $def[3]);
-        for ($c = 1; $c <= $rand_max; $c++) {
-          $field_result[$i]['value'] .= devel_create_para(mt_rand(10, 60)) . "\n\n";
+
+        // If escaping all tags, do not add <p> tags.
+        $include_p_tags = TRUE;
+        $format = $formats[$field_result[$i]['format']];
+        if (array_key_exists('filter_html_escape', $format->filters)) {
+          $include_p_tags = FALSE;
         }
+
+        $rand_max = mt_rand($def[2], $def[3]);
+        $output = '';
+        for ($r = 1; $r <= $rand_max; $r++) {
+          $word_count = mt_rand(10, 60);
+          if ($include_p_tags) {
+            $output .= "<p>" . devel_create_greeking($word_count)  . "</p>\n\n";
+          }
+          else {
+            $output .= devel_create_greeking($word_count) . "\n\n";
+          }
+        }
+
+        $field_result[$i]['value'] = $output;
       }
 
       if ($instance['widget']['type'] == 'text_textarea_with_summary' && !empty($instance['display_summary'])) {
