@@ -1,5 +1,6 @@
 {
     "_config_name": "devel_generate_text_settings.settings",
-    "devel_generate_text_settings_node_title_prefix": "",
-    "devel_generate_text_settings_node_text_settings": ""
+    "node_title_prefix": "",
+    "username_prefix": "",
+    "text_field_settings": ""
 }
