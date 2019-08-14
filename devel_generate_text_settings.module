@@ -178,16 +178,24 @@ function devel_generate_text_settings_apply_text_field_settings_to_field(&$entit
  */
 function devel_generate_text_settings_form_alter(&$form, &$form_state, $form_id) {
   $entity_forms = array(
-    'devel_generate_content_form',
-    'devel_generate_users_form',
-    'profile_generate_form',
-    // 'devel_generate_term_form', // Backdrop Devel doesnt add 'devel_generate' => TRUE to its terms yet.
+    'devel_generate_content_form' => 'node',
+    'devel_generate_users_form' => 'user',
+    'profile_generate_form' => 'profile',
+    // 'devel_generate_term_form' => 'term', // Backdrop Devel doesnt add 'devel_generate' => TRUE to its terms yet.
   );
 
-  if (in_array($form_id, $entity_forms)) {
+  if (in_array($form_id, array_keys($entity_forms))) {
 
     $config = config('devel_generate_text_settings.settings');
     $form['title_length']['#title'] = t('Maximum number of words in title (excluding <em>title prefix</em> if set below)');
+
+    $available_bundles = field_info_instances($entity_forms[$form_id]);
+    $available_fields = array();
+    foreach ($available_bundles as $bundles) {
+      foreach ($bundles as $field_name => $bundle) {
+        $available_fields[$field_name] = $field_name;
+      }
+    }
 
     // Add a new title_prefix field to allow automatic title prefixing for nodes
     // (useful for identifying auto-generated content).
@@ -212,7 +220,6 @@ function devel_generate_text_settings_form_alter(&$form, &$form_state, $form_id)
         '#weight' => 98,
       );
     }
-
     // Add a settings field to allow fine-grained control of text and long text fields
     $form['text_field_settings'] = array(
       '#type' => 'textarea',
@@ -230,6 +237,18 @@ function devel_generate_text_settings_form_alter(&$form, &$form_state, $form_id)
       '#default_value' => $config->get('text_field_settings'),
       '#weight' => 99,
     );
+
+    $form['field_list_wrapper'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Available fields'),
+      '#collapsible' => TRUE,
+      '#collapsed' => !empty($available_fields),
+      '#weight' => 100,
+    );
+    $form['field_list_wrapper']['field_list'] = array(
+      '#markup' => empty($available_fields) ? t('There are no fields on this entity') : theme('item_list', array('items' => $available_fields)),
+    );
+
 
     $form['submit']['#weight'] = 100;
 
