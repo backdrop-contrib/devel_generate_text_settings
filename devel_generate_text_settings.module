@@ -13,6 +13,7 @@ function devel_generate_text_settings_config_info() {
     'label' => t('Devel generate text settings'),
     'group' => t('Configuration'),
   );
+  return $prefixes;
 }
 
 /**
